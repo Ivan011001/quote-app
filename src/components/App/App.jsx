@@ -41,6 +41,19 @@ export default class App extends Component {
     } catch (error) {}
   };
 
+  onQuoteChange = async fields => {
+    try {
+      console.log(fields);
+      const updatedQuote = await API.updateQuote(fields);
+      console.log(updatedQuote);
+      this.setState(prevState => ({
+        quotes: prevState.quotes.map(quote =>
+          quote.id === fields.id ? updatedQuote : quote
+        ),
+      }));
+    } catch (error) {}
+  };
+
   render() {
     const { quotes } = this.state;
 
@@ -48,7 +61,11 @@ export default class App extends Component {
       <AppWrapper>
         <GlobalStyle />
         <Form onSubmit={this.postQuote} />
-        <List quotes={quotes} onDelete={this.onQuoteDelete} />
+        <List
+          quotes={quotes}
+          onDelete={this.onQuoteDelete}
+          onChange={this.onQuoteChange}
+        />
         <ToastContainer />
       </AppWrapper>
     );

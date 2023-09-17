@@ -9,7 +9,10 @@ export const createQuote = async fields => {
   const response = await axios.post('/quotes', fields);
   return response.data;
 };
-export const updateQuote = () => {};
+export const updateQuote = async fields => {
+  const response = await axios.put(`quotes/${fields.id}`, fields);
+  return response.data;
+};
 export const deleteQuote = async id => {
   const response = await axios.delete(`quotes/${id}`);
   return response.data;
