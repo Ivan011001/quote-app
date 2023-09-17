@@ -2,8 +2,10 @@ import { Component } from 'react';
 import { AppWrapper } from './App.styled';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Audio } from 'react-loader-spinner';
 
 import * as API from '../../services/api';
+import Section from 'components/Section';
 import Form from 'components/Form';
 import List from 'components/List';
 
@@ -12,6 +14,7 @@ import { GlobalStyle } from 'components/GlobalStyle.styled';
 export default class App extends Component {
   state = {
     quotes: [],
+    isLoading: false,
   };
 
   componentDidMount() {
@@ -20,9 +23,13 @@ export default class App extends Component {
 
   fetchAllQuotes = async () => {
     try {
+      this.setState({ isLoading: true });
       const quotes = await API.getQuotes();
       this.setState({ quotes });
-    } catch (error) {}
+    } catch (error) {
+    } finally {
+      this.setState({ isLoading: false });
+    }
   };
 
   postQuote = async fields => {
@@ -43,7 +50,6 @@ export default class App extends Component {
 
   onQuoteChange = async fields => {
     try {
-      console.log(fields);
       const updatedQuote = await API.updateQuote(fields);
       console.log(updatedQuote);
       this.setState(prevState => ({
@@ -55,17 +61,27 @@ export default class App extends Component {
   };
 
   render() {
-    const { quotes } = this.state;
+    const { quotes, isLoading } = this.state;
 
     return (
       <AppWrapper>
         <GlobalStyle />
-        <Form onSubmit={this.postQuote} />
-        <List
-          quotes={quotes}
-          onDelete={this.onQuoteDelete}
-          onChange={this.onQuoteChange}
-        />
+        <Section title="Add new quote">
+          <Form onSubmit={this.postQuote} />
+        </Section>
+
+        <Section title="All quotes">
+          {isLoading ? (
+            <Audio />
+          ) : (
+            <List
+              quotes={quotes}
+              onDelete={this.onQuoteDelete}
+              onChange={this.onQuoteChange}
+            />
+          )}
+        </Section>
+
         <ToastContainer />
       </AppWrapper>
     );
